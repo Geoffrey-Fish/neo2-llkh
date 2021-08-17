@@ -10,6 +10,7 @@
 
 #include <windows.h>
 #include <stdio.h>
+#include <time.h>
 #include <wchar.h>
 #include <stdbool.h>
 #include "trayicon.h"
@@ -72,6 +73,7 @@ bool supportLevels5and6 = false;     // support levels five and six (greek lette
 bool capsLockAsEscape = false;       // if true, hitting CapsLock alone sends Esc
 bool mod3RAsReturn = false;          // if true, hitting Mod3R alone sends Return
 bool mod4LAsTab = false;             // if true, hitting Mod4L alone sends Tab
+int modTapTimeout = 0;               // if >0, hitting a modifier alone only sends the alternative key if the press was shorter than the timeout
 
 /**
  * True if no mapping should be done
@@ -91,6 +93,9 @@ bool level3modRightPressed = false;
 bool level3modLeftAndNoOtherKeyPressed = false;
 bool level3modRightAndNoOtherKeyPressed = false;
 bool level4modLeftAndNoOtherKeyPressed = false;
+clock_t level3modLeftPressedInstant = 0;
+clock_t level3modRightPressedInstant = 0;
+clock_t level4modLeftPressedInstant = 0;
 
 bool level4modLeftPressed = false;
 bool level4modRightPressed = false;
@@ -1128,32 +1133,49 @@ bool handleSystemKey(KBDLLHOOKSTRUCT keyInfo, bool isKeyUp) {
 	return true;
 }
 
+bool wasTap(clock_t pressInstant, clock_t releaseInstant) {
+	double pressSeconds = (double) (releaseInstant - pressInstant) / CLOCKS_PER_SEC;
+	return modTapTimeout == 0 || 1000 * pressSeconds < modTapTimeout;
+}
+
 void handleMod3Key(KBDLLHOOKSTRUCT keyInfo, bool isKeyUp) {
 	if (isKeyUp) {
+		clock_t releaseInstant = clock();
+
 		if (keyInfo.scanCode == scanCodeMod3R) {
 			level3modRightPressed = false;
 			modState.mod3 = level3modLeftPressed | level3modRightPressed;
 			if (mod3RAsReturn && level3modRightAndNoOtherKeyPressed) {
 				sendUp(keyInfo.vkCode, keyInfo.scanCode, false); // release Mod3_R
-				sendDownUp(VK_RETURN, 28, true); // send Return
 				level3modRightAndNoOtherKeyPressed = false;
+				if (wasTap(level3modRightPressedInstant, releaseInstant)) {
+					sendDownUp(VK_RETURN, 28, true); // send Return
+				}
 			}
 		} else { // scanCodeMod3L (CapsLock)
 			level3modLeftPressed = false;
 			modState.mod3 = level3modLeftPressed | level3modRightPressed;
 			if (capsLockAsEscape && level3modLeftAndNoOtherKeyPressed) {
 				sendUp(VK_CAPITAL, 58, false); // release Mod3_R
-				sendDownUp(VK_ESCAPE, 1, true); // send Escape
 				level3modLeftAndNoOtherKeyPressed = false;
+				if (wasTap(level3modLeftPressedInstant, releaseInstant)) {
+					sendDownUp(VK_ESCAPE, 1, true); // send Escape
+				}
 			}
 		}
 	} else { // keyDown
 		if (keyInfo.scanCode == scanCodeMod3R) {
-			level3modRightPressed = true;
+			if (!level3modRightPressed) {
+				level3modRightPressed = true;
+				level3modRightPressedInstant = clock();
+			}
 			if (mod3RAsReturn)
 				level3modRightAndNoOtherKeyPressed = true;
 		} else { // VK_CAPITAL (CapsLock)
-			level3modLeftPressed = true;
+			if (!level3modLeftPressed) {
+				level3modLeftPressed = true;
+				level3modLeftPressedInstant = clock();
+			}
 			if (capsLockAsEscape)
 				level3modLeftAndNoOtherKeyPressed = true;
 		}
@@ -1163,6 +1185,8 @@ void handleMod3Key(KBDLLHOOKSTRUCT keyInfo, bool isKeyUp) {
 
 void handleMod4Key(KBDLLHOOKSTRUCT keyInfo, bool isKeyUp) {
 	if (isKeyUp) {
+		clock_t releaseInstant = clock();
+
 		if (keyInfo.scanCode == scanCodeMod4L) {
 			level4modLeftPressed = false;
 			if (level4modRightPressed && level4LockEnabled) {
@@ -1170,9 +1194,11 @@ void handleMod4Key(KBDLLHOOKSTRUCT keyInfo, bool isKeyUp) {
 				printf("Level4 lock %s!\n", level4LockActive ? "activated" : "deactivated");
 			} else if (mod4LAsTab && level4modLeftAndNoOtherKeyPressed) {
 				sendUp(keyInfo.vkCode, keyInfo.scanCode, false); // release Mod4_L
-				sendDownUp(VK_TAB, 15, true); // send Tab
 				level4modLeftAndNoOtherKeyPressed = false;
 				modState.mod4 = level4modLeftPressed | level4modRightPressed;
+				if (wasTap(level4modLeftPressedInstant, releaseInstant)) {
+					sendDownUp(VK_TAB, 15, true); // send Tab
+				}
 				return;
 			}
 		} else { // scanCodeMod4R
@@ -1185,7 +1211,10 @@ void handleMod4Key(KBDLLHOOKSTRUCT keyInfo, bool isKeyUp) {
 		modState.mod4 = level4modLeftPressed | level4modRightPressed;
 	} else { // keyDown
 		if (keyInfo.scanCode == scanCodeMod4L) {
-			level4modLeftPressed = true;
+			if (!level4modLeftPressed) {
+				level4modLeftPressed = true;
+				level4modLeftPressedInstant = clock();
+			}
 			if (mod4LAsTab)
 				level4modLeftAndNoOtherKeyPressed = !(level4modRightPressed || level3modLeftPressed || level3modRightPressed);
 		} else { // scanCodeMod4R
@@ -1411,6 +1440,12 @@ bool checkSetting(char *keyword, char *filename) {
 	return (strcmp(returnValue, "1") == 0);
 }
 
+int getSettingInt(char *keyword, char *filename) {
+	char returnValue[100];
+	GetPrivateProfileStringA("Settings", keyword, "0", returnValue, 100, filename);
+	return atoi(returnValue);
+}
+
 int main(int argc, char *argv[]) {
 	setbuf(stdout, NULL);
 	/**
@@ -1451,6 +1486,7 @@ int main(int argc, char *argv[]) {
 		capsLockAsEscape = checkSetting("capsLockAsEscape", ini);
 		mod3RAsReturn = checkSetting("mod3RAsReturn", ini);
 		mod4LAsTab = checkSetting("mod4LAsTab", ini);
+		modTapTimeout = getSettingInt("modTapTimeout", ini);
 		debugWindow = checkSetting("debugWindow", ini);
 
 		if (capsLockEnabled)
@@ -1480,6 +1516,7 @@ int main(int argc, char *argv[]) {
 		printf(" capsLockAsEscape: %d\n", capsLockAsEscape);
 		printf(" mod3RAsReturn: %d\n", mod3RAsReturn);
 		printf(" mod4LAsTab: %d\n", mod4LAsTab);
+		printf(" modTapTimeout: %d\n", modTapTimeout);
 		printf(" debugWindow: %d\n\n", debugWindow);
 
 		// char const* const fileName = argv[1]; /* should check that argc > 1 */
@@ -1630,6 +1667,10 @@ int main(int argc, char *argv[]) {
 			} else if (strcmp(param, "mod4LAsTab") == 0) {
 				mod4LAsTab = (strcmp(value, "1") == 0);
 				printf("\n mod4LAsTab: %d", mod4LAsTab);
+
+			} else if (strcmp(param, "modTapTimeout") == 0) {
+				modTapTimeout = atoi(value);
+				printf("\n modTapTimeout: %d", modTapTimeout);
 
 			} else {
 				printf("\nUnbekannter Parameter:%s", param);
