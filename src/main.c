@@ -835,8 +835,8 @@ void sendChar(TCHAR key, KBDLLHOOKSTRUCT keyInfo) {
 		keybd_event(keyInfo.vkCode, keyInfo.scanCode, dwFlagsFromKeyInfo(keyInfo), keyInfo.dwExtraInfo);
 
 		if (altgr) sendUp(VK_RMENU, 56, true);
-		if (ctrl) sendUp(VK_CONTROL, 29, false);
 		if (alt) sendUp(VK_MENU, 56, false); // ALT
+		if (ctrl) sendUp(VK_CONTROL, 29, false);
 		if (shift) sendUp(VK_SHIFT, 42, false);
 	}
 }
