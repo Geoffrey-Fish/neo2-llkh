@@ -29,6 +29,7 @@ enum {
 NOTIFYICONDATA trayicon_data = { };
 
 HMENU popup_menu;
+HWND hidden_window;
 
 callback_functionPtr *functionptr_array = NULL;
 unsigned item_count = 1;
@@ -37,7 +38,6 @@ LRESULT CALLBACK trayicon_messageloop(HWND hWnd, UINT msg, WPARAM wParam, LPARAM
 
 bool trayicon_init(HICON icon, char tooltip[])
 {
-	HWND hidden_window;
 	WNDCLASSEX wc = { 0 };
 	TCHAR class_name[256];
 
@@ -128,12 +128,13 @@ LRESULT CALLBACK trayicon_messageloop(HWND hWnd, UINT msg, WPARAM wParam, LPARAM
 				}
 			case WM_RBUTTONUP:
 				{
+					SetForegroundWindow(hidden_window);
 					POINT cursor_position;
 					GetCursorPos(&cursor_position);
 					TrackPopupMenu(popup_menu, 0, cursor_position.x,
-						       cursor_position.y, 0, hWnd, 0);
+					               cursor_position.y, 0, hWnd, 0);
+					PostMessage(hidden_window, WM_NULL, 0, 0);
 					break;
-
 				}
 			}
 			break;
