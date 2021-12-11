@@ -1088,7 +1088,7 @@ void handleShiftKey(KBDLLHOOKSTRUCT keyInfo, bool isKeyUp) {
  **/
 bool handleSystemKey(KBDLLHOOKSTRUCT keyInfo, bool isKeyUp) {
 	bool newStateValue = !isKeyUp;
-	DWORD dwFlags = isKeyUp ? KEYEVENTF_KEYUP : keyInfo.flags;
+	DWORD dwFlags = isKeyUp ? (keyInfo.flags | KEYEVENTF_KEYUP) : keyInfo.flags;
 
 	// Check also the scan code because AltGr sends VK_LCONTROL with scanCode 541
 	if (keyInfo.vkCode == VK_LCONTROL && keyInfo.scanCode == 29) {
@@ -1097,7 +1097,7 @@ bool handleSystemKey(KBDLLHOOKSTRUCT keyInfo, bool isKeyUp) {
 			keybd_event(VK_LMENU, 56, dwFlags, 0);
 		} else if (swapLeftCtrlLeftAltAndLeftWin) {
 			winLeftPressed = newStateValue;
-			keybd_event(VK_LWIN, 91, dwFlags, 0);
+			keybd_event(VK_LWIN, 91, dwFlags | LLKHF_EXTENDED, 0);
 		} else {
 			ctrlLeftPressed = newStateValue;
 			keybd_event(VK_LCONTROL, 29, dwFlags, 0);
@@ -1105,7 +1105,7 @@ bool handleSystemKey(KBDLLHOOKSTRUCT keyInfo, bool isKeyUp) {
 		return false;
 	} else if (keyInfo.vkCode == VK_RCONTROL) {
 		ctrlRightPressed = newStateValue;
-		keybd_event(VK_RCONTROL, 29, dwFlags, 0);
+		keybd_event(VK_RCONTROL, 29, dwFlags | LLKHF_EXTENDED, 0);
 	} else if (keyInfo.vkCode == VK_LMENU) {
 		if (swapLeftCtrlAndLeftAlt || swapLeftCtrlLeftAltAndLeftWin) {
 			ctrlLeftPressed = newStateValue;
@@ -1118,7 +1118,7 @@ bool handleSystemKey(KBDLLHOOKSTRUCT keyInfo, bool isKeyUp) {
 	} else if (keyInfo.vkCode == VK_LWIN) {
 		if (swapLeftCtrlLeftAltAndLeftWin) {
 			altLeftPressed = newStateValue;
-			keybd_event(VK_LMENU, 56, dwFlags, 0);
+			keybd_event(VK_LMENU, 56, dwFlags & ~LLKHF_EXTENDED, 0);
 		} else {
 			winLeftPressed = newStateValue;
 			keybd_event(VK_LWIN, 91, dwFlags, 0);
