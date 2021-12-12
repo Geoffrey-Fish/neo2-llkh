@@ -74,6 +74,7 @@ bool capsLockAsEscape = false;       // if true, hitting CapsLock alone sends Es
 bool mod3RAsReturn = false;          // if true, hitting Mod3R alone sends Return
 bool mod4LAsTab = false;             // if true, hitting Mod4L alone sends Tab
 int modTapTimeout = 0;               // if >0, hitting a modifier alone only sends the alternative key if the press was shorter than the timeout
+bool preferDeadKeyPlusSpace = false; // if true, send dead "^" (caret) followed by space instead of Unicode "^" (same for "`" (backtick))
 
 /**
  * True if no mapping should be done
@@ -868,20 +869,35 @@ bool handleLayer3SpecialCases(KBDLLHOOKSTRUCT keyInfo) {
 			sendChar(L'\u030A', keyInfo);  // overring
 			return true;
 		case 20:
-			sendUnicodeChar(L'^', keyInfo);
+			if (preferDeadKeyPlusSpace) {
+				sendChar(L'^', keyInfo);
+				sendChar(L' ', keyInfo);
+			} else {
+				sendUnicodeChar(L'^', keyInfo);
+			}
 			return true;
 		case 27:
 			sendChar(L'\u0337', keyInfo);  // bar (diakritischer Schrägstrich)
 			return true;
 		case 31:
 			if (strcmp(layout, "kou") == 0 || strcmp(layout, "vou") == 0) {
-				sendUnicodeChar(L'`', keyInfo);
+				if (preferDeadKeyPlusSpace) {
+					sendChar(L'`', keyInfo);
+					sendChar(L' ', keyInfo);
+				} else {
+					sendUnicodeChar(L'`', keyInfo);
+				}
 				return true;
 			}
 			return false;
 		case 48:
 			if (strcmp(layout, "kou") != 0 && strcmp(layout, "vou") != 0) {
-				sendUnicodeChar(L'`', keyInfo);
+				if (preferDeadKeyPlusSpace) {
+					sendChar(L'`', keyInfo);
+					sendChar(L' ', keyInfo);
+				} else {
+					sendUnicodeChar(L'`', keyInfo);
+				}
 				return true;
 			}
 			return false;
@@ -1487,6 +1503,7 @@ int main(int argc, char *argv[]) {
 		mod3RAsReturn = checkSetting("mod3RAsReturn", ini);
 		mod4LAsTab = checkSetting("mod4LAsTab", ini);
 		modTapTimeout = getSettingInt("modTapTimeout", ini);
+		preferDeadKeyPlusSpace = checkSetting("preferDeadKeyPlusSpace", ini);
 		debugWindow = checkSetting("debugWindow", ini);
 
 		if (capsLockEnabled)
@@ -1517,6 +1534,7 @@ int main(int argc, char *argv[]) {
 		printf(" mod3RAsReturn: %d\n", mod3RAsReturn);
 		printf(" mod4LAsTab: %d\n", mod4LAsTab);
 		printf(" modTapTimeout: %d\n", modTapTimeout);
+		printf(" preferDeadKeyPlusSpace: %d\n", preferDeadKeyPlusSpace);
 		printf(" debugWindow: %d\n\n", debugWindow);
 
 		// char const* const fileName = argv[1]; /* should check that argc > 1 */
@@ -1671,6 +1689,10 @@ int main(int argc, char *argv[]) {
 			} else if (strcmp(param, "modTapTimeout") == 0) {
 				modTapTimeout = atoi(value);
 				printf("\n modTapTimeout: %d", modTapTimeout);
+
+			} else if (strcmp(param, "preferDeadKeyPlusSpace") == 0) {
+				preferDeadKeyPlusSpace = (strcmp(value, "1") == 0);
+				printf("\n preferDeadKeyPlusSpace: %d", preferDeadKeyPlusSpace);
 
 			} else {
 				printf("\nUnbekannter Parameter:%s", param);
