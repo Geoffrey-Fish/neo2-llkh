@@ -75,6 +75,7 @@ bool mod3RAsReturn = false;          // if true, hitting Mod3R alone sends Retur
 bool mod4LAsTab = false;             // if true, hitting Mod4L alone sends Tab
 int modTapTimeout = 0;               // if >0, hitting a modifier alone only sends the alternative key if the press was shorter than the timeout
 bool preferDeadKeyPlusSpace = false; // if true, send dead "^" (caret) followed by space instead of Unicode "^" (same for "`" (backtick))
+bool capsLockAndQuoteAsShift = false; // if true, treat CapsLock and quote (QWERTZ: Ä) key as shift keys (undocumented option, might not work with other options)
 
 /**
  * True if no mapping should be done
@@ -1346,6 +1347,23 @@ LRESULT CALLBACK keyevent(int code, WPARAM wparam, LPARAM lparam) {
 		return CallNextHookEx(NULL, code, wparam, lparam);
 	}
 
+	// treat CapsLock and Ä as shift keys
+	if (capsLockAndQuoteAsShift) {
+		if (keyInfo.vkCode == VK_CAPITAL) {
+			if (isKeyUp)
+				sendUp(VK_LSHIFT, 0x2a, false);
+			else
+				sendDown(VK_LSHIFT, 0x2a, false);
+			return -1;
+		} else if (keyInfo.vkCode == VK_OEM_7) {
+			if (isKeyUp)
+				sendUp(VK_RSHIFT, 0x36, false);
+			else
+				sendDown(VK_RSHIFT, 0x36, false);
+			return -1;
+		}
+	}
+
 	if (isKeyUp) {
 		logKeyEvent("key up", keyInfo, FG_CYAN);
 
@@ -1504,6 +1522,7 @@ int main(int argc, char *argv[]) {
 		mod4LAsTab = checkSetting("mod4LAsTab", ini);
 		modTapTimeout = getSettingInt("modTapTimeout", ini);
 		preferDeadKeyPlusSpace = checkSetting("preferDeadKeyPlusSpace", ini);
+		capsLockAndQuoteAsShift = checkSetting("capsLockAndQuoteAsShift", ini);
 		debugWindow = checkSetting("debugWindow", ini);
 
 		if (capsLockEnabled)
@@ -1535,6 +1554,7 @@ int main(int argc, char *argv[]) {
 		printf(" mod4LAsTab: %d\n", mod4LAsTab);
 		printf(" modTapTimeout: %d\n", modTapTimeout);
 		printf(" preferDeadKeyPlusSpace: %d\n", preferDeadKeyPlusSpace);
+		printf(" capsLockAndQuoteAsShift: %d\n", capsLockAndQuoteAsShift);
 		printf(" debugWindow: %d\n\n", debugWindow);
 
 		// char const* const fileName = argv[1]; /* should check that argc > 1 */
@@ -1693,6 +1713,10 @@ int main(int argc, char *argv[]) {
 			} else if (strcmp(param, "preferDeadKeyPlusSpace") == 0) {
 				preferDeadKeyPlusSpace = (strcmp(value, "1") == 0);
 				printf("\n preferDeadKeyPlusSpace: %d", preferDeadKeyPlusSpace);
+
+			} else if (strcmp(param, "capsLockAndQuoteAsShift") == 0) {
+				capsLockAndQuoteAsShift = (strcmp(value, "1") == 0);
+				printf("\n capsLockAndQuoteAsShift: %d", capsLockAndQuoteAsShift);
 
 			} else {
 				printf("\nUnbekannter Parameter:%s", param);
