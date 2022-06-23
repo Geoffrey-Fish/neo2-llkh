@@ -10,6 +10,7 @@
 
 #include <windows.h>
 #include <stdio.h>
+#include <stdint.h>
 #include <time.h>
 #include <wchar.h>
 #include <stdbool.h>
@@ -1568,6 +1569,11 @@ int main(int argc, char *argv[]) {
 				char *token = strtok(line, "=");
 				if (token == NULL) continue;
 				int keycode = (int)token[0];
+				uint8_t c = token[0];
+				//2-byte UTF sequence
+				if (c >> 5 == 0b110) {
+					keycode = (int)((token[0] << 6) & 0b0000011111000000) | ((token[1] << 0) & 0b0000000000111111);
+				}
 				token = strtok(NULL, "(");
 				if (token == NULL) continue;
 				token = strtok(NULL, ")");
