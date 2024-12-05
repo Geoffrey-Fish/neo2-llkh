@@ -32,7 +32,7 @@ HANDLE hConsole;
 #define SCANCODE_QUOTE_KEY 40      // Ä
 #define SCANCODE_HASH_KEY 43       // #
 #define SCANCODE_RETURN_KEY 28
-// #define SCANCODE_ANY_ALT_KEY 56        // Alt or AltGr
+#define SCANCODE_ANY_ALT_KEY 56        // Alt or AltGr
 
 enum modTapModifier {
 	MT_NONE,
@@ -63,7 +63,7 @@ bool tabAsMod4L = false;             // use tab as left level 4 modifier
 DWORD scanCodeMod3L = SCANCODE_CAPSLOCK_KEY;
 DWORD scanCodeMod3R = SCANCODE_HASH_KEY;       // depends on quoteAsMod3R and returnAsMod3R
 DWORD scanCodeMod4L = SCANCODE_LOWER_THAN_KEY; // depends on tabAsMod4L
-// DWORD scanCodeMod4R = SCANCODE_ANY_ALT_KEY;
+DWORD scanCodeMod4R = SCANCODE_ANY_ALT_KEY;
 bool capsLockEnabled = false;        // enable (allow) caps lock
 bool shiftLockEnabled = false;       // enable (allow) shift lock (disabled if capsLockEnabled is true)
 bool level4LockEnabled = false;      // enable (allow) level 4 lock (toggle by pressing both Mod4 keys at the same time)
@@ -479,7 +479,7 @@ void initLevel4SpecialCases() {
 	mappingTableLevel4Special[33] = VK_RIGHT;
 	mappingTableLevel4Special[34] = VK_END;
 
-	if (strcmp(layout, "kou") == 0 || strcmp(layout, "vou") == 0) {
+	if (strcmp(layout, "kou") == 0 || strcmp(layout, "vou") == 0||strcmp(layout,"gay")) {
 		mappingTableLevel4Special[44] = VK_INSERT;
 		mappingTableLevel4Special[45] = VK_TAB;
 		mappingTableLevel4Special[46] = VK_RETURN;
@@ -618,22 +618,27 @@ void initLayout() {
 		wcscpy(mappingTableLevel1 + 44, L"xqäüöbpwmj");
 
 	} else if (strcmp(layout, "kou") == 0
-				|| strcmp(layout, "vou") == 0) {
+				|| strcmp(layout, "vou") == 0
+				|| strcmp(layout, "gay")== 0) {
 		if (strcmp(layout, "kou") == 0) {
 			wcscpy(mappingTableLevel1 + 16, L"k.ouäqgclfj´");
 			wcscpy(mappingTableLevel1 + 30, L"haeiybtrnsß");
 			wcscpy(mappingTableLevel1 + 44, L"zx,üöpdwmv");
-		} else {  // vou
+		} else if {  // vou
 			wcscpy(mappingTableLevel1 + 16, L"v.ouäqglhfj´");
 			wcscpy(mappingTableLevel1 + 30, L"caeiybtrnsß");
 			wcscpy(mappingTableLevel1 + 44, L"zx,üöpdwmk");
 			/* mappingTapNextRelease[0x3A] = MT_SHIFT; // CapsLock */
 			/* mappingTapNextRelease[0x28] = MT_SHIFT; // Ä */
+		} else {
+			wcscpy(mappingTableLevel1 + 16, L"jäoukzclvxß?");
+			wcscpy(mappingTableLevel1 + 30, L"haeigdtnrs!");
+			wcscpy(mappingTableLevel1 + 44, L".y,öübpmwf");
 		}
 
-		wcscpy(mappingTableLevel3 + 16, L"@%{}^!<>=&€̷");
-		wcscpy(mappingTableLevel3 + 30, L"|`()*?/:-_→");
-		wcscpy(mappingTableLevel3 + 44, L"#[]~$+\"'\\;");
+		wcscpy(mappingTableLevel3 + 16, L"@|€{}<*789%");
+		wcscpy(mappingTableLevel3 + 30, L"\\/()>-456=&");
+		wcscpy(mappingTableLevel3 + 44, L"#~[]$_1230");
 
 		wcscpy(mappingTableLevel4 +  4, L"✔✘·£¤0/*-¨");
 		wcscpy(mappingTableLevel4 + 21, L":789+−˝");
