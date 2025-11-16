@@ -581,7 +581,7 @@ void initLayout() {
 	mappingTableLevel3[27] = L'\u0337'; // "Combining Short Solidus Overlay"
 	//wcscpy(mappingTableLevel3 + 30, L"\\/{}*?()-:@"); 
 	wcscpy(mappingTableLevel3 + 30, L"\"\\/()>-456=&");
-  //wcscpy(mappingTableLevel3 + 44, L"#$|~`+%\"';");
+	//wcscpy(mappingTableLevel3 + 44, L"#$|~`+%\"';");
 	wcscpy(mappingTableLevel3 + 44, L"\'#~[]$_1230");
 	wcscpy(mappingTableLevel3 + 71, L"↕↑↨−←:→±↔↓⇌%,"); // numeric keypad
 	mappingTableLevel3[55] = L'⋅'; // *-key on numeric keypad

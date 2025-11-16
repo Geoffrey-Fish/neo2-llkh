@@ -24,7 +24,7 @@ typedef struct ModState {
 
 HHOOK keyhook = NULL;
 HANDLE hConsole;
-#define APPNAME "neo-llkh"
+#define APPNAME "neo-llkh"l
 #define LEN 103
 #define SCANCODE_TAB_KEY 15
 #define SCANCODE_CAPSLOCK_KEY 58
@@ -461,7 +461,7 @@ void mapLevels_2_5_6(TCHAR * mappingTableOutput, TCHAR * newChars) {
 void initLevel4SpecialCases() {
 	mappingTableLevel4Special[16] = VK_PRIOR;
 
-	if (strcmp(layout, "bpm") == 0 || strcmp(layout, "vou") == 0) {
+	if (strcmp(layout, "kou") == 0 || strcmp(layout, "vou") == 0) {
 		mappingTableLevel4Special[17] = VK_NEXT;
 		mappingTableLevel4Special[18] = VK_UP;
 		mappingTableLevel4Special[19] = VK_BACK;
@@ -479,7 +479,7 @@ void initLevel4SpecialCases() {
 	mappingTableLevel4Special[33] = VK_RIGHT;
 	mappingTableLevel4Special[34] = VK_END;
 
-	if (strcmp(layout, "bpm") == 0 || strcmp(layout, "vou") == 0) {
+	if (strcmp(layout, "kou") == 0 || strcmp(layout, "vou") == 0) {
 		mappingTableLevel4Special[44] = VK_INSERT;
 		mappingTableLevel4Special[45] = VK_TAB;
 		mappingTableLevel4Special[46] = VK_RETURN;
@@ -576,13 +576,10 @@ void initLayout() {
 
 	wcscpy(mappingTableLevel3 + 41, L"^");
 	wcscpy(mappingTableLevel3 +  2, L"¹²³›‹¢¥‚‘’—̊");
-	//wcscpy(mappingTableLevel3 + 16, L"…_[]^!<>=&ſ");
-	wcscpy(mappingTableLevel3 + 16, L"@|€{}<*789%");
+	wcscpy(mappingTableLevel3 + 16, L"…_[]^!<>=&ſ");
 	mappingTableLevel3[27] = L'\u0337'; // "Combining Short Solidus Overlay"
-	//wcscpy(mappingTableLevel3 + 30, L"\\/{}*?()-:@"); 
-	wcscpy(mappingTableLevel3 + 30, L"\"\\/()>-456=&");
-  //wcscpy(mappingTableLevel3 + 44, L"#$|~`+%\"';");
-	wcscpy(mappingTableLevel3 + 44, L"\'#~[]$_1230");
+	wcscpy(mappingTableLevel3 + 30, L"\\/{}*?()-:@");
+	wcscpy(mappingTableLevel3 + 44, L"#$|~`+%\"';");
 	wcscpy(mappingTableLevel3 + 71, L"↕↑↨−←:→±↔↓⇌%,"); // numeric keypad
 	mappingTableLevel3[55] = L'⋅'; // *-key on numeric keypad
 	mappingTableLevel3[57] = L' '; // Spacebar → space
@@ -620,12 +617,12 @@ void initLayout() {
 		wcscpy(mappingTableLevel1 + 30, L"haeiudtrnsf");
 		wcscpy(mappingTableLevel1 + 44, L"xqäüöbpwmj");
 
-	} else if (strcmp(layout, "bpm") == 0
+	} else if (strcmp(layout, "kou") == 0
 				|| strcmp(layout, "vou") == 0) {
-		if (strcmp(layout, "bpm") == 0) {
-			wcscpy(mappingTableLevel1 + 16, L"qjäoukzclvxß");
-			wcscpy(mappingTableLevel1 + 30, L"?haeigdtnrs!");
-			wcscpy(mappingTableLevel1 + 44, L".y,öübpmwf");
+		if (strcmp(layout, "kou") == 0) {
+			wcscpy(mappingTableLevel1 + 16, L"k.ouäqgclfj´");
+			wcscpy(mappingTableLevel1 + 30, L"haeiybtrnsß");
+			wcscpy(mappingTableLevel1 + 44, L"zx,üöpdwmv");
 		} else {  // vou
 			wcscpy(mappingTableLevel1 + 16, L"v.ouäqglhfj´");
 			wcscpy(mappingTableLevel1 + 30, L"caeiybtrnsß");
@@ -634,13 +631,10 @@ void initLayout() {
 			/* mappingTapNextRelease[0x28] = MT_SHIFT; // Ä */
 		}
 
-		//wcscpy(mappingTableLevel3 + 16, L"@%{}^!<>=&€̷");
-		//wcscpy(mappingTableLevel3 + 30, L"|`()*?/:-_→");
-		//wcscpy(mappingTableLevel3 + 44, L"#[]~$+\"'\\;");
-		wcscpy(mappingTableLevel3 + 16, L"@|€{}<*789%^");
-		wcscpy(mappingTableLevel3 + 30, L"\"\\/()>-456=&");
-		wcscpy(mappingTableLevel3 + 44, L"\'#~[]$_1230+");
-		//
+		wcscpy(mappingTableLevel3 + 16, L"@%{}^!<>=&€̷");
+		wcscpy(mappingTableLevel3 + 30, L"|`()*?/:-_→");
+		wcscpy(mappingTableLevel3 + 44, L"#[]~$+\"'\\;");
+
 		wcscpy(mappingTableLevel4 +  4, L"✔✘·£¤0/*-¨");
 		wcscpy(mappingTableLevel4 + 21, L":789+−˝");
 		wcscpy(mappingTableLevel4 + 35, L"-456,;");
