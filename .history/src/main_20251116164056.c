@@ -581,7 +581,7 @@ void initLayout() {
 		//wcscpy(mappingTableLevel3 + 16, L"@%{}^!<>=&€̷");
 		//wcscpy(mappingTableLevel3 + 30, L"|`()*?/:-_→");
 		//wcscpy(mappingTableLevel3 + 44, L"#[]~$+\"'\\;");
-		cwcscpy(mappingTableLevel3 + 16, L"@|€{}<*789%^");
+		wcscpy(mappingTableLevel3 + 16, L"@|€{}<*789%^");
 		wcscpy(mappingTableLevel3 + 30, L"\"\\/()>-456=&");
 		wcscpy(mappingTableLevel3 + 44, L"\'#~[]$_1230+");
 		//
