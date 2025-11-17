@@ -40,25 +40,7 @@ Dieser Treiber unterstützt folgende Tastaturlayouts:
 * Eine Benutzerin hat berichtet, dass die Scollfunktion ihres Touchpads ausfällt, wenn sie Enter (AltGr+V) oder Escape (AltGr+Y) auf Ebene 4 im Neo-Layout betätigt.
 
 ## Selbst kompilieren
-Um diesen Treiber aus den Quellen zu installieren, klone dieses Projekt (`git clone https://github.com/MaxGyver83/neo2-llkh.git`) oder lade es als zip herunter und entpacke es. Führe dann `make` im `src`-Ordner aus. Dafür werden make und gcc benötigt. Falls du mit dieser Info nichts anfangen kannst, aber trotzdem selbst kompilieren willst, führe die nachfolgenden Schritte aus:
-
-### Schritt für Schritt
-
-1. Lade [w64devkit-mini-1.17.0.zip](https://github.com/skeeto/w64devkit/releases/download/v1.17.0/w64devkit-mini-1.17.0.zip) (56 MB) (oder neuer) herunter und entpacke das Archiv (z.B. nach `Downloads`).
-2. Starte die Eingabeaufforderung (Windows-Menü -> Terminal -> Eingabeaufforderung) und gib folgendes ein:
-
-```
-set PATH=%USERPROFILE%\Downloads\w64devkit\bin;%PATH%
-bash
-
-cd ~/Downloads
-wget https://github.com/MaxGyver83/neo2-llkh/archive/refs/heads/master.zip
-unzip master.zip
-cd neo2-llkh-master/src
-make
-```
-
-3. Programm ausführen mit `./neo-llkh.exe`.
+Um diesen Treiber aus den Quellen zu installieren, klone dieses Projekt (`git clone https://github.com/MaxGyver83/neo2-llkh.git`) oder lade es als zip herunter und entpacke es. Führe dann `make` im `src`-Ordner aus. Dafür müssen make und gcc installiert sein. Wenn du diese Programme noch nicht hast, könntest du z.B. [MinGW](https://sourceforge.net/projects/mingw/) installieren.
 
 ## Verwendung
 Starte einfach die selbst kompilierte `neo-llkh.exe` aus dem `src`-Ordner oder lade `neo-llkh.exe` und `settings.ini` von https://github.com/MaxGyver83/neo2-llkh/releases runter. Standardmäßig wird das Neo2-Layout geladen.

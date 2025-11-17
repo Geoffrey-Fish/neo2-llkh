@@ -10,12 +10,12 @@ BEGIN
         BLOCK "080904b0"
         BEGIN
             VALUE "CompanyName", ""
-            VALUE "FileDescription", "gay keyboard driver"
+            VALUE "FileDescription", "neo2 keyboard driver"
             VALUE "FileVersion", "0, 1, 0, 0"
-            VALUE "InternalName", "Gay Board"
-            VALUE "LegalCopyright", "ScyMarshall"
-            VALUE "OriginalFilename", "gayboard.exe"
-            VALUE "ProductName", "Gay Board"
+            VALUE "InternalName", "neo2-llkh"
+            VALUE "LegalCopyright", "2014 David Otto"
+            VALUE "OriginalFilename", "neo2-llkh.exe"
+            VALUE "ProductName", "neo2-llkh"
             VALUE "ProductVersion", "0, 3, 0, 0"
         END
     END
